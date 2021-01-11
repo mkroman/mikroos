@@ -5,6 +5,11 @@ use std::fs;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
+#[cfg(unix)]
+use std::os::unix::process::CommandExt;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
 /// Runs the given `cmdline` to determine whether the tool called `name` is installed and usable
 ///
 /// Returns `Some(())` on success
@@ -22,6 +27,12 @@ fn run_quiet(cmd: &str, args: &[&str]) -> Option<()> {
     }
 }
 
+fn gdb() -> Result<(), Box<dyn std::error::Error>> {
+    Command::new("gdb").args(&["-x", "./gdbinit"]).exec();
+
+    Ok(())
+}
+
 fn build() -> Result<(), Box<dyn std::error::Error>> {
     // Create the build folders if they don't exist
     fs::create_dir_all("build/bootloader")?;
@@ -31,12 +42,13 @@ fn build() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Building bootloader");
 
-    if !Command::new("cargo")
+    if !Command::new("xargo")
         .current_dir(bootloader_dir)
         .arg("build")
         .arg("--target-dir")
         .arg("../build/bootloader")
         .arg("--release")
+        .arg("-v")
         .status()?
         .success()
     {
@@ -70,6 +82,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match action.as_str() {
             "build" => build()?,
+            "gdb" => gdb()?,
             _ => {
                 eprintln!("Unknown action: {}", action);
             }

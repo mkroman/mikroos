@@ -11,6 +11,8 @@
 //   History: 
 //------------------------------------------------
 
+LittleEndian();
+
 typedef ubyte u8;
 typedef uint32 u32;
 typedef uint16 u16;
@@ -151,7 +153,7 @@ struct FILE {
         u32 flashOffset <format=hex>;
     } imgStart;
 
-    u8 hash[32];    /*hash of the image*/
+    u8 hash[32] <format=hex>;    /*hash of the image*/
 
     u32 rsv1;
     u32 rsv2;
