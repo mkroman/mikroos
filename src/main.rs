@@ -28,7 +28,9 @@ fn run_quiet(cmd: &str, args: &[&str]) -> Option<()> {
 }
 
 fn gdb() -> Result<(), Box<dyn std::error::Error>> {
-    Command::new("gdb").args(&["-x", "./gdbinit"]).exec();
+    Command::new("riscv64-unknown-elf-gdb")
+        .args(&["-x", "./gdbinit"])
+        .exec();
 
     Ok(())
 }
@@ -42,7 +44,7 @@ fn build() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Building bootloader");
 
-    if !Command::new("xargo")
+    if !Command::new("cargo")
         .current_dir(bootloader_dir)
         .arg("build")
         .arg("--target-dir")

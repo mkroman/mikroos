@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
-#![feature(asm)]
 
+use core::arch::asm;
 use core::panic::PanicInfo;
 
 mod riscv;
@@ -11,6 +11,14 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
+/// Starting point for the firmware.
+///
+/// This function sets the global pointer, enables exception- and software interrupts and clears
+/// general purpose registers before calling `main`
+///
+/// # Safety
+///
+/// This function should never be called manually
 #[link_section = ".init"]
 #[no_mangle]
 pub unsafe fn _init() -> ! {
@@ -43,5 +51,7 @@ pub unsafe fn _init() -> ! {
 }
 
 pub fn main() -> ! {
+    riscv::ebreak();
+
     loop {}
 }
